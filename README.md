@@ -22,7 +22,6 @@ In that period, all keyboards will TRY to behave normally, but due to LUASCRIPT 
 2. Find desired button
 3. Copy its number
 4. Paste it instead of default macroHotkey number in "SETTINGS SECTION"
-look at keyNames table in "KEYNAMES SECTION" and find correct number.
 
 # To record macro, do following:
 1. Press and hold your hotkey combination (for example, "c" or "ctrl+shift+a")
@@ -40,4 +39,4 @@ look at keyNames table in "KEYNAMES SECTION" and find correct number.
 1. Go to "SETTINGS SECTION"
 2. Comment or delete "use('all')" line
 3. Type "use('your_customized_keyboard_id')"
-ID of triggered keyboard is shown in log form below, when you press any key.
+4. ID of triggered keyboard is shown in log form below, when you press any key.
