@@ -8,7 +8,7 @@ GitHub:
 https://github.com/mrsimb/macrorecorder
 
 # Before you start
-Default key for recording macro is 45 (INSERT).
+Default key for recording macro is 45 (INSERT).  
 By default, this script will automaticaly try to use all connected keyboards and let you set them up.
 
 # Changing hotkey
