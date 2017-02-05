@@ -31,9 +31,9 @@ After first start, this script will automaticaly try to use all connected keyboa
 3. Press macro hotkey again, without typing any sequence
 
 # After you set up your hotkey combinations:
-1. Comment or delete "use('all')" line in "SETTINGS SECTION"
-3. Type "use('your_customized_keyboard_id')"
-4. ID of triggered keyboard is shown in log form below, when you press any key.
+1. Remove or comment "use('all')" in "SETTINGS SECTION"
+2. Type "use('your_customized_keyboard_id')"
+* ID of triggered keyboard is shown in log form below, when you press any key.
 
 # Known issues
 * Can't hold TAB, SHIFT, CTRL, ALT, they sent repeatly, due to LuaMacros limitations
