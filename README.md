@@ -7,6 +7,9 @@ https://github.com/mrsimb/macrorecorder/archive/master.zip
 GitHub:
 https://github.com/mrsimb/macrorecorder
 
+LuaMacros:
+https://github.com/me2d13/luamacros
+
 # Before you start
 Default key for recording macro is INSERT (key code 45).  
 After first start, this script will automaticaly try to use all connected keyboards and let you set them up.
