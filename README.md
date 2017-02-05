@@ -34,7 +34,7 @@ After first start, this script will automaticaly try to use all connected keyboa
 1. Remove or comment "use('all')" in "SETTINGS SECTION"
 2. Check keyboard (shown in log form below, when you press any key)
 3. Type "use('your_keyboard_id')" in "SETTINGS SECTION"  
-Example: use('92&0&')
+4. Example: use('92&0&')
 
 # Known issues
 - Can't hold TAB, SHIFT, CTRL, ALT, they sent repeatly, due to LuaMacros limitations
