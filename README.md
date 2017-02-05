@@ -18,8 +18,8 @@ In that period, all keyboards will TRY to behave normally, but due to LUASCRIPT 
 - hold TAB, SHIFT, CTRL, ALT keys (they will be sent repeatly)
 
 # Changing hotkey
-1. Look for desired key code in "KEY NAMES TABLE"
-2. Change macroHotkey to that key code in "SETTINGS SECTION"
+1. Look for correct key code in "KEY NAMES TABLE"
+2. Change macroHotkey code in "SETTINGS SECTION"
 
 # Recording macro
 1. Press and hold your hotkey combination (for example, "c" or "ctrl+shift+a")
