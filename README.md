@@ -17,13 +17,11 @@ By default, this script will automaticaly try to use ALL connected keyboards and
 In that period, all keyboards will TRY to behave normally, but due to LUASCRIPT LIMITATIONS, you wouldn't be able to:
 - hold TAB, SHIFT, CTRL, ALT keys (they will be sent repeatly)
 
-# To change recording hotkey, do following:
-1. Go to "KEYNAMES SECTION"
-2. Find desired button
-3. Copy its number
-4. Paste it instead of default macroHotkey number in "SETTINGS SECTION"
+# Changing hotkey
+1. Look for desired key code in "KEY NAMES TABLE"
+2. Change macroHotkey to that key code in "SETTINGS SECTION"
 
-# To record macro, do following:
+# Recording macro
 1. Press and hold your hotkey combination (for example, "c" or "ctrl+shift+a")
 2. Press macro hotkey (do it quickly!)
 3. Release all keys
@@ -40,3 +38,6 @@ In that period, all keyboards will TRY to behave normally, but due to LUASCRIPT 
 2. Comment or delete "use('all')" line
 3. Type "use('your_customized_keyboard_id')"
 4. ID of triggered keyboard is shown in log form below, when you press any key.
+
+# Known issues
+* can't hold TAB, SHIFT, CTRL, ALT, they sent repeatly, due to LuaMacros limitations
