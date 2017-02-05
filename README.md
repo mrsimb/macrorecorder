@@ -1,2 +1,2 @@
 # EasyHotkey
-Script for LuaMacros for recording macros just using your keyboard, without programming required.
+Script for LuaMacros that let you record macros without programming required.
