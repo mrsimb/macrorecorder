@@ -33,7 +33,7 @@ After first start, this script will automaticaly try to use all connected keyboa
 # After you set up your hotkey combinations:
 1. Remove or comment "use('all')" in "SETTINGS SECTION"
 2. Type "use('your_customized_keyboard_id')"
-* ID of triggered keyboard is shown in log form below, when you press any key.
+! ID of triggered keyboard is shown in log form below, when you press any key.
 
 # Known issues
 * Can't hold TAB, SHIFT, CTRL, ALT, they sent repeatly, due to LuaMacros limitations
