@@ -9,7 +9,7 @@ https://github.com/mrsimb/macrorecorder
 
 # Before you start
 Default key for recording macro is INSERT (key code 45).  
-By default, this script will automaticaly try to use all connected keyboards and let you set them up.
+After first start, this script will automaticaly try to use all connected keyboards and let you set them up.
 
 # Changing hotkey
 1. Look for correct key code in "KEY NAMES TABLE"
