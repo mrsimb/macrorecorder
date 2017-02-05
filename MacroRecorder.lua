@@ -186,7 +186,7 @@ keyboards = {}
 target = nil
 handler = nil
 
-hotkey = 19
+macroHotkey = 19
 minimize = true
 
 sequence = ''
