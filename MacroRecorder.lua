@@ -1,46 +1,66 @@
+--------------------------------------------------------------------------------
+------------------------------------ README ------------------------------------
+--------------------------------------------------------------------------------
+--[[
+  MacroRecorder v0.1 beta
+  https://github.com/mrsimb/EasyHotkey
+
+  LuaMacros
+  https://github.com/me2d13/luamacros
+
+  TODO:
+  - Saving config (for now, all recorded macros will be deleted upon app exit)
+
+  Default key for recording macro is 19 (PAUSE/BREAK).
+
+  By default, this script will automaticaly try to use ALL
+  connected keyboards and let you SET THEM UP.
+
+  In that period, all keyboards will TRY to behave normally,
+  but due to LUASCRIPT LIMITATIONS, you wouldn't be able to:
+  - hold TAB, SHIFT, CTRL, ALT keys
+
+  To change recording hotkey, do following:
+  1. Go to "KEYNAMES SECTION"
+  2. Find desired button
+  3. Copy its number
+  4. Paste it instead of default macroHotkey number in "SETTINGS SECTION"
+  look at keyNames table in "KEYNAMES SECTION" and find correct number.
+
+  To record macro, do following:
+  1. Press and hold your hotkey combination (for example, "c" or "ctrl+shift+a")
+  2. Press macro hotkey (do it quickly!)
+  3. Release all keys
+  4. Type desired key sequence (for example, "ctrl+a, ctrl+c, right, ctrl+v")
+  5. Press macro hotkey again
+
+  To delete macro, do following:
+  1. Press and hold your hotkey combination
+  2. Release all keys
+  3. Press macro hotkey again, without typing any sequence
+
+  AFTER you set your up hotkey combinations, do following:
+  1. Go to "SETTINGS SECTION"
+  2. Comment or delete "use('all')" line
+  3. Type "use('your_customized_keyboard_id')"
+     ID of triggered keyboard is shown in log form below, when you press any key
+--]]
+
+--------------------------------------------------------------------------------
+------------------------------- SETTINGS SECTION -------------------------------
+--------------------------------------------------------------------------------
+
 function setup()
-  --[[
-     EasyHotkey v0.1 beta for LuaMacros
-     https://github.com/mrsimb/EasyHotkey
-     LuaMacros
-     https://github.com/me2d13/luamacros
-
-     Hello. Please READ THIS information before use.
-
-     Default key for recording macro is 19 (PAUSE/BREAK),
-     to change it, just look at keyNames table and find correct number.
-
-     By default, this script will automaticaly try to USE ALL
-     connected keyboards and let you SET THEM UP.
-
-     In that period, all keyboards will TRY to behave normally,
-     but DUE TO LUASCRIPT LIMITATIONS, you wouldn't be able to:
-     - hold TAB, SHIFT, CTRL, ALT keys
-
-     To set up macro, do following:
-     1. Press and hold your hotkey combination (for example, "c" or "ctrl+shift+a")
-     2. Press macro hotkey (do it quickly!)
-     3. Release all keys
-     4. Type desired key sequence (for example, "ctrl+a, ctrl+c, right, ctrl+v")
-     5. Press macro hotkey again
-
-     To delete macro, do following:
-     1. Press and hold your hotkey combination
-     2. Release all keys
-     3. Press macro hotkey again, without typing any sequence
-
-     AFTER you set your up hotkey combinations,
-     delete or comment "use('all')"
-     and LEAVE ONLY CUSTOMIZED KEYBOARDS by using command:
-     "use('customized_keyboard_id')"
-  --]]
-
-  macroHotkey = 19
+  macroHotkey = 45
   minimize = false
 
-  use('all') -- DELETE AFTER SETTING UP!
-  use('customized_keyboard_id')
+  use('all')
+  use('your_customized_keyboard_id')
 end
+
+--------------------------------------------------------------------------------
+------------------------------- KEY NAMES SECTION ------------------------------
+--------------------------------------------------------------------------------
 
 keyNames = {
   [8] = '{backspace}',
@@ -151,6 +171,17 @@ keyNames = {
   [222] = '\''
 }
 
+function getKeyName(scanCode)
+  if (keyNames[scanCode]) then
+    return keyNames[scanCode]
+  end
+  return nil
+end
+
+--------------------------------------------------------------------------------
+---------------------------------- VARIABLES -----------------------------------
+--------------------------------------------------------------------------------
+
 keyboards = {}
 target = nil
 handler = nil
@@ -160,35 +191,10 @@ minimize = true
 
 sequence = ''
 
-function getKeyName(scanCode)
-  if (keyNames[scanCode]) then
-    return keyNames[scanCode]
-  end
-  return nil
-end
+--------------------------------------------------------------------------------
+--------------------------- KEYBOARD INITIALIZATION ----------------------------
+--------------------------------------------------------------------------------
 
-function init()
-  clear()
-  lmc_print_devices()
-  handler = listener
-  setup()
-  if (minimize) then
-    lmc_minimize()
-  end
-end
-
-function anyKeyPressed()
-  for i = 1, #keyboards do
-    if (keyboards[i].used) then
-      for j = 8, 222 do
-        if (keyboards[i].keyStates[j] == true) then
-          return true
-        end
-      end
-    end
-  end
-  return false
-end
 
 function createKeyboard(id)
   local kb = {}
@@ -225,22 +231,54 @@ function use(id)
   end
 end
 
-function useAllKeyboards()
-  for i = 1, 255 do
-    use(string.format("%02x", i) .. '&0&')
+--------------------------------------------------------------------------------
+------------------------------- KEYPRESS STUFF ---------------------------------
+--------------------------------------------------------------------------------
+
+function anyKeyPressed()
+  for i = 1, #keyboards do
+    if (keyboards[i].used) then
+      for j = 8, 222 do
+        if (keyboards[i].keyStates[j] == true) then
+          return true
+        end
+      end
+    end
   end
+  return false
 end
 
 function getModifiers(caller)
   local modifiers = ''
-  if (caller.keyStates[9] == true) then  modifiers = modifiers .. getKeyName(9) end
-  if (caller.keyStates[16] == true) then  modifiers = modifiers .. getKeyName(16) end
-  if (caller.keyStates[17] == true) then  modifiers = modifiers .. getKeyName(17) end
-  if (caller.keyStates[18] == true) then  modifiers = modifiers .. getKeyName(18) end
+
+  -- TAB
+  if (caller.keyStates[9] == true) then
+    modifiers = modifiers .. getKeyName(9)
+  end
+
+  -- SHIFT
+  if (caller.keyStates[16] == true) then
+    modifiers = modifiers .. getKeyName(16)
+  end
+
+  -- CTRL
+  if (caller.keyStates[17] == true) then
+    modifiers = modifiers .. getKeyName(17)
+  end
+
+  -- ALT
+  if (caller.keyStates[18] == true) then
+    modifiers = modifiers .. getKeyName(18)
+  end
+
   return modifiers
 end
 
-function setHotkey(target, sequence, action)
+--------------------------------------------------------------------------------
+------------------------------- HOTKEY ASSIGNING -------------------------------
+--------------------------------------------------------------------------------
+
+function setMacro(target, sequence, action)
   if (action == '') then
     target.map[sequence] = nil
   else
@@ -248,10 +286,14 @@ function setHotkey(target, sequence, action)
   end
 end
 
+--------------------------------------------------------------------------------
+-------------------------------- EDITOR HANDLER --------------------------------
+--------------------------------------------------------------------------------
+
 function editor(caller, scanCode, direction)
   if (direction == 1) then
     if (scanCode == macroHotkey) then
-      setHotkey(target, target.sequence, sequence)
+      setMacro(target, target.sequence, sequence)
       print(target.id .. 'hotkey \"' .. target.sequence .. '\" set to \"' .. sequence .. '\"')
       sequence = ''
       handler = listener
@@ -269,6 +311,10 @@ function editor(caller, scanCode, direction)
     end
   end
 end
+
+--------------------------------------------------------------------------------
+------------------------------- LISTENER HANDLER -------------------------------
+--------------------------------------------------------------------------------
 
 function listener(caller, scanCode, direction)
   if (direction == 1) then
@@ -293,13 +339,16 @@ function listener(caller, scanCode, direction)
   else
     if (not anyKeyPressed()) then
       caller.sequence = ''
-      print('keys released')
+      print('all keys released')
     end
   end
 end
 
+--------------------------------------------------------------------------------
+-------------------------------- INPUT RECIEVER --------------------------------
+--------------------------------------------------------------------------------
+
 function reciever(caller, scanCode, direction)
-  --print('id ' .. caller.id .. ' recieved ' .. scanCode .. ' ' .. direction)
   if (direction == 1) then
     caller.used = true
     caller.keyStates[scanCode] = true
@@ -308,6 +357,20 @@ function reciever(caller, scanCode, direction)
   end
 
   handler(caller, scanCode, direction)
+end
+
+--------------------------------------------------------------------------------
+-------------------------------- INITIALIZATION --------------------------------
+--------------------------------------------------------------------------------
+
+function init()
+  clear()
+  lmc_print_devices()
+  handler = listener
+  setup()
+  if (minimize) then
+    lmc_minimize()
+  end
 end
 
 init()
