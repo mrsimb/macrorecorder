@@ -9,9 +9,7 @@ https://github.com/mrsimb/macrorecorder
 
 # Before you start
 Default key for recording macro is 45 (INSERT).
-By default, this script will automaticaly try to use ALL connected keyboards and let you SET THEM UP.
-In that period, all keyboards will TRY to behave normally, but due to LUASCRIPT LIMITATIONS, you wouldn't be able to:
-- hold TAB, SHIFT, CTRL, ALT keys (they will be sent repeatly)
+By default, this script will automaticaly try to use all connected keyboards and let you set them up.
 
 # Changing hotkey
 1. Look for correct key code in "KEY NAMES TABLE"
