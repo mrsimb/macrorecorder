@@ -2,6 +2,7 @@
 ------------------------------------ README ------------------------------------
 --------------------------------------------------------------------------------
 --[[
+# MacroRecorder
 Script for LuaMacros that let you record macros without programming required.
 
 Download link:
@@ -10,40 +11,40 @@ https://github.com/mrsimb/macrorecorder/archive/master.zip
 GitHub:
 https://github.com/mrsimb/macrorecorder
 
-TODO:
-- Saving config (for now, all recorded macros will be deleted upon app exit)
+LuaMacros:
+https://github.com/me2d13/luamacros
 
-Default key for recording macro is 45 (INSERT).
+## Before you start
+This script is only for use with additional keypad/keyboard.
 
-By default, this script will automaticaly try to use ALL connected keyboards and let you SET THEM UP.
+After initial start of the script, all your keyboards will try to work as usual,
+but will lag in some way. That is due to LuaMacros limitations.
 
-In that period, all keyboards will TRY to behave normally, but due to LUASCRIPT LIMITATIONS, you wouldn't be able to:
-- hold TAB, SHIFT, CTRL, ALT keys (they will be sent repeatly)
+When you're done with recording macros for your keypad, go to "SETTINGS SECTION"
+and change use("all") to use("your_keypad_id").
 
-To change recording hotkey, do following:
-1. Go to "KEYNAMES SECTION"
-2. Find desired button
-3. Copy its number
-4. Paste it instead of default macroHotkey number in "SETTINGS SECTION"
-look at keyNames table in "KEYNAMES SECTION" and find correct number.
+ID is shown in log form of LuaMacros window every time you press any key.
+Default record hotkey is INSERT (key code 45).
 
-To record macro, do following:
-1. Press and hold your hotkey combination (for example, "c" or "ctrl+shift+a")
-2. Press macro hotkey (do it quickly!)
-3. Release all keys
-4. Type desired key sequence (for example, "ctrl+a, ctrl+c, right, ctrl+v")
-5. Press macro hotkey again
+## How to use
+1. Press and hold your hotkey combination ("ctrl c", for example)
+2. Press INSERT (do it quickly!) and release all keys
+3. Type your macro
+4. Press INSERT again
+5. Done. Now every time you press "ctrl c" script will reproduce recorded key sequence.
 
-To delete macro, do following:
+## Removing macro:
 1. Press and hold your hotkey combination
-2. Release all keys
-3. Press macro hotkey again, without typing any sequence
+2. Press INSERT and release all keys
+3. Press INSERT again, without typing any sequence
 
-AFTER you set up your hotkey combinations, do following:
-1. Go to "SETTINGS SECTION"
-2. Comment or delete "use('all')" line
-3. Type "use('your_customized_keyboard_id')"
-ID of triggered keyboard is shown in log form below, when you press any key.
+## Changing record hotkey
+1. Look for correct key code in "KEY NAMES TABLE"
+2. Change macroHotkey code in "SETTINGS SECTION"
+
+## Known issues
+- By strange reason, recording with non-english keyboard layouts won't work (for me at least).
+- Recording shift+(abc), and sending it results Abc, not ABC. This is a LuaMacros bug.
 --]]
 
 --------------------------------------------------------------------------------
@@ -51,11 +52,16 @@ ID of triggered keyboard is shown in log form below, when you press any key.
 --------------------------------------------------------------------------------
 
 function setup()
-  macroHotkey = 45
+  load('macros.lua')
   minimize = false
 
+  -- before all macros recorded
   use('all')
-  use('your_customized_keyboard_id')
+
+  -- after all macros recorded, remove use('all') and type
+  use('your_customized_keypad_id')
+  -- example:
+  use('92&0&')
 end
 
 --------------------------------------------------------------------------------
@@ -165,69 +171,166 @@ keyNames = {
   [189] = '-',
   [190] = '.',
   [191] = '/',
+  [192] = '`',
   [220] = '\\',
   [221] = ']',
   [219] = '[',
   [222] = '\''
 }
 
-function getKeyName(scanCode)
-  if (keyNames[scanCode]) then
-    return keyNames[scanCode]
-  end
-  return nil
-end
-
 --------------------------------------------------------------------------------
 ---------------------------------- VARIABLES -----------------------------------
 --------------------------------------------------------------------------------
 
+macroHotkey = 45
+minimize = false
+
 keyboards = {}
 target = nil
-handler = nil
-
-macroHotkey = 19
-minimize = true
-
 sequence = ''
+
+handle = nil
+suspendInput = false
+
+config = ''
 
 --------------------------------------------------------------------------------
 --------------------------- KEYBOARD INITIALIZATION ----------------------------
 --------------------------------------------------------------------------------
 
+function init(kb)
+  if (kb.reciever == nil) then
+    function kb.reciever(scanCode, direction)
+      input(kb, scanCode, direction)
+    end
 
-function createKeyboard(id)
-  local kb = {}
-  kb.id = id
-  kb.map = {}
-  kb.keyStates = {}
-  kb.sequence = ''
-  kb.used = false
-
-  function kb.reciever(scanCode, direction)
-    reciever(kb, scanCode, direction)
+    lmc_device_set_name(kb.id, kb.id)
+    lmc_set_handler(kb.id, kb.reciever)
   end
-
-  lmc_device_set_name(id, id)
-  lmc_set_handler(id, kb.reciever)
-
-  return kb
 end
 
 function use(id)
-  -- check if already exists
-  for i = 1, #keyboards do
-    if (keyboards[id] == id) then
+  print('using ' .. id)
+
+  for n, kb in pairs(keyboards) do
+    if (kb.id == id) then
+      --keyboard exists, just add reciever then return
+      init(kb)
       return
     end
   end
 
+  -- if id == 'all' use all keyboards from 00&0& to ff&0&
+  -- if it not exist
+  -- create map and id for it
+  -- add reciever
   if (id == 'all') then
     for i = 1, 255 do
       use(string.format("%02x", i) .. '&0&')
     end
   else
-    keyboards[#keyboards+1] = createKeyboard(id)
+    local kb = {}
+    kb.id = id
+    kb.map = {}
+    init(kb)
+    keyboards[#keyboards+1] = kb
+  end
+
+  -- other stuff will be added right after keyboard is used in input function
+end
+
+--------------------------------------------------------------------------------
+-------------------------------- INPUT RECIEVER --------------------------------
+--------------------------------------------------------------------------------
+
+function input(caller, scanCode, direction)
+  -- if no keyStates, add it and other stuff
+  if (caller.keyStates == nil) then
+    caller.keyStates = {}
+    caller.sequence = ''
+  end
+
+  if (direction == 1) then
+    caller.keyStates[scanCode] = true
+  else
+    caller.keyStates[scanCode] = false
+  end
+
+  handle(caller, scanCode, direction)
+end
+
+--------------------------------------------------------------------------------
+------------------------------- HOTKEY ASSIGNING -------------------------------
+--------------------------------------------------------------------------------
+
+function setMacro(target, sequence, action)
+  if (action == '') then
+    target.map[sequence] = nil
+  else
+    target.map[sequence] = action
+  end
+end
+
+--------------------------------------------------------------------------------
+--------------------------------- EDIT HANDLER ---------------------------------
+--------------------------------------------------------------------------------
+
+function edit(caller, scanCode, direction)
+  if (direction == 1) then
+    if (isDown(macroHotkey)) then
+      setMacro(target, target.sequence, sequence)
+      print('id ' .. target.id .. ' hotkey \"' .. target.sequence .. '\" set to \"' .. sequence .. '\"')
+
+      sequence = ''
+
+      save()
+      print('saving to config.lua')
+
+      handle = listen
+    else
+      sequence = sequence .. getKeyName(scanCode)
+      print('id ' .. caller.id .. ' sequence \"' .. sequence .. '\"')
+    end
+  else
+    if (not suspendInput and (scanCode >= 16 and scanCode <= 18  or scanCode == 9)) then
+      sequence = sequence .. ')'
+    end
+    if (not anyKeyPressed()) then
+      suspendInput = false
+    end
+  end
+end
+
+--------------------------------------------------------------------------------
+-------------------------------- LISTEN HANDLER --------------------------------
+--------------------------------------------------------------------------------
+
+function listen(caller, scanCode, direction)
+  if (direction == 1) then
+    if (isDown(macroHotkey)) then
+      if (caller.sequence ~= '') then
+        suspendInput = true
+        target = caller
+        handle = edit
+        print('entering edit mode')
+      end
+    else
+      caller.sequence = caller.sequence .. getKeyName(scanCode)
+      print('id ' .. caller.id .. ' recieved \"' .. caller.sequence .. '\"')
+
+      if (caller.map[caller.sequence] ~= nil) then
+        print('id ' .. caller.id .. ' hotkey \"' .. caller.sequence .. '\" sending \"' .. caller.map[caller.sequence] .. '\"')
+        lmc_send_keys(caller.map[caller.sequence])
+      else
+        lmc_send_keys(getModifiers(caller) .. getKeyName(scanCode))
+      end
+    end
+  else
+    if (not anyKeyPressed()) then
+      caller.sequence = ''
+      print('all keys released')
+      print()
+    end
   end
 end
 
@@ -235,14 +338,30 @@ end
 ------------------------------- KEYPRESS STUFF ---------------------------------
 --------------------------------------------------------------------------------
 
+function getKeyName(scanCode)
+  if (keyNames[scanCode] ~= nil) then
+    return keyNames[scanCode]
+  end
+  return nil
+end
+
 function anyKeyPressed()
   for i = 1, #keyboards do
-    if (keyboards[i].used) then
+    if (keyboards[i].keyStates ~= nil) then
       for j = 8, 222 do
         if (keyboards[i].keyStates[j] == true) then
           return true
         end
       end
+    end
+  end
+  return false
+end
+
+function isDown(scanCode)
+  for i = 1, #keyboards do
+    if (keyboards[i].keyStates ~= nil and keyboards[i].keyStates[scanCode]) then
+      return true
     end
   end
   return false
@@ -274,103 +393,72 @@ function getModifiers(caller)
   return modifiers
 end
 
+
 --------------------------------------------------------------------------------
-------------------------------- HOTKEY ASSIGNING -------------------------------
+---------------------------------- LOAD / SAVE ---------------------------------
 --------------------------------------------------------------------------------
 
-function setMacro(target, sequence, action)
-  if (action == '') then
-    target.map[sequence] = nil
-  else
-    target.map[sequence] = action
+function load(path)
+  config = path
+
+  local file = io.open(path, 'r')
+
+  if file then
+    dofile(path)
+
+    for n, kb in pairs(keyboards) do
+      use(kb.id)
+    end
+
+    file.close()
+
+    print(path .. ' loaded')
+    return
   end
+
+  print(path .. ' not found')
 end
 
---------------------------------------------------------------------------------
--------------------------------- EDITOR HANDLER --------------------------------
---------------------------------------------------------------------------------
+function save()
+  file = io.open(config, 'w')
+  io.output(file)
 
-function editor(caller, scanCode, direction)
-  if (direction == 1) then
-    if (scanCode == macroHotkey) then
-      setMacro(target, target.sequence, sequence)
-      print(target.id .. 'hotkey \"' .. target.sequence .. '\" set to \"' .. sequence .. '\"')
-      sequence = ''
-      handler = listener
-      print('leaving editor mode')
-    else
-      sequence = sequence .. getKeyName(scanCode)
-      print('id ' .. caller.id .. ' sequence \"' .. sequence .. '\"')
-    end
-  else
-    if (not suspendInput and (scanCode >= 16 and scanCode <= 18) or scanCode == 9) then
-      sequence = sequence .. ')'
-    end
-    if (not anyKeyPressed()) then
-      suspendInput = false
-    end
-  end
-end
+  io.write('keyboards = {\n')
 
---------------------------------------------------------------------------------
-------------------------------- LISTENER HANDLER -------------------------------
---------------------------------------------------------------------------------
+  for n, kb in pairs(keyboards) do
+    if (kb.keyStates ~= nil) then
+      io.write('  {\n')
+      io.write('    id = \'', kb.id, '\',\n')
 
-function listener(caller, scanCode, direction)
-  if (direction == 1) then
-    if (scanCode == macroHotkey) then
-      if (caller.sequence ~= '') then
-        suspendInput = true
-        target = caller
-        handler = editor
-        print('entering editor mode')
+      io.write('    map = {\n')
+
+      for k, v in pairs(kb.map) do
+        io.write('      [\'', k, '\'] = \'', v, '\',\n')
       end
-    else
-      caller.sequence = caller.sequence .. getKeyName(scanCode)
-      print('id ' .. caller.id .. ' sequence \"' .. caller.sequence .. '\"')
 
-      if (caller.map[caller.sequence]) then
-        print('id ' .. caller.id .. ' hotkey \"' .. caller.sequence .. '\" sending \"' .. caller.map[caller.sequence] .. '\"')
-        lmc_send_keys(caller.map[caller.sequence])
-      else
-        lmc_send_keys(getModifiers(caller) .. getKeyName(scanCode))
-      end
-    end
-  else
-    if (not anyKeyPressed()) then
-      caller.sequence = ''
-      print('all keys released')
+      io.write('    }\n')
+      io.write('  },\n')
     end
   end
+
+  io.write('}\n')
+
+  file.close()
 end
 
 --------------------------------------------------------------------------------
--------------------------------- INPUT RECIEVER --------------------------------
+------------------------------------ STARTUP -----------------------------------
 --------------------------------------------------------------------------------
 
-function reciever(caller, scanCode, direction)
-  if (direction == 1) then
-    caller.used = true
-    caller.keyStates[scanCode] = true
-  else
-    caller.keyStates[scanCode] = false
-  end
-
-  handler(caller, scanCode, direction)
-end
-
---------------------------------------------------------------------------------
--------------------------------- INITIALIZATION --------------------------------
---------------------------------------------------------------------------------
-
-function init()
+function start()
   clear()
-  lmc_print_devices()
-  handler = listener
   setup()
+  lmc_print_devices()
+  handle = listen
   if (minimize) then
     lmc_minimize()
   end
 end
 
-init()
+start()
+
