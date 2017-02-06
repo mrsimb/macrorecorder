@@ -17,8 +17,8 @@ Default record hotkey is INSERT (key code 45).
 
 ## How to use
 1. Press and hold your hotkey combination ("ctrl c", for example)
-2. Press INSERT (do it quickly!)
-3. Release all keys and type your macro
+2. Press INSERT (do it quickly!) and release all keys
+3. Type your macro
 4. Press INSERT again
 5. Done. Now every time you press "ctrl c" script will reproduce recorded key sequence.
 
