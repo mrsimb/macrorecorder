@@ -24,7 +24,8 @@ Default record hotkey is INSERT (key code 45).
 
 ## Removing macro:
 1. Press and hold your hotkey combination
-2. Release all keys and press INSERT again, without typing any sequence
+2. Press INSERT and release all keys
+3. Press INSERT again, without typing any sequence
 
 ## Changing record hotkey
 1. Look for correct key code in "KEY NAMES TABLE"
