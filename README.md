@@ -11,7 +11,7 @@ LuaMacros:
 https://github.com/me2d13/luamacros
 
 # Before you start
-After initial start of the script, your keyboard will try to work as usual, but will lag in some way. That is due to LuaMacros limitations.  
+After initial start of the script, all your keyboard will try to work as usual, but will lag in some way. That is due to LuaMacros limitations.  
 When you're done with setting your macros, go to "SETTINGS SECTION" and change use("all") to use("your_keypad_id"). Keyboard id is shown in log form of LuaMacros window every time you press any key.  
 Default record hotkey is INSERT (key code 45).
 
