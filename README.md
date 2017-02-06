@@ -12,9 +12,14 @@ https://github.com/me2d13/luamacros
 
 ## Before you start
 This script is only for use with additional keypad/keyboard.
-After initial start of the script, all your keyboards will try to work as usual, but will lag in some way. That is due to LuaMacros limitations.  
-When you're done with recording macros for your keypad, go to "SETTINGS SECTION" and change use("all") to use("your_keypad_id").  
-ID is shown in log form of LuaMacros window every time you press any key.  
+
+After initial start of the script, all your keyboards will try to work as usual,
+but will lag in some way. That is due to LuaMacros limitations.
+
+When you're done with recording macros for your keypad, go to "SETTINGS SECTION"
+and change use("all") to use("your_keypad_id").
+
+ID is shown in log form of LuaMacros window every time you press any key.
 Default record hotkey is INSERT (key code 45).
 
 ## How to use
@@ -34,6 +39,5 @@ Default record hotkey is INSERT (key code 45).
 2. Change macroHotkey code in "SETTINGS SECTION"
 
 ## Known issues
-- Macros no saving. There is just no save function at the time, i'm working on it.
 - By strange reason, recording with non-english keyboard layouts won't work (for me at least).
 - Recording shift+(abc), and sending it results Abc, not ABC. This is a LuaMacros bug.
