@@ -55,6 +55,8 @@ function setup()
   load('macros.lua')
   minimize = false
 
+  macroHotkey = 45
+
   -- before all macros recorded
   use('all')
 
@@ -277,7 +279,7 @@ end
 
 function edit(caller, scanCode, direction)
   if (direction == 1) then
-    if (isDown(macroHotkey)) then
+    if (scanCode == macroHotkey) then
       setMacro(target, target.sequence, sequence)
       print('id ' .. target.id .. ' hotkey \"' .. target.sequence .. '\" set to \"' .. sequence .. '\"')
 
@@ -307,14 +309,12 @@ end
 
 function listen(caller, scanCode, direction)
   if (direction == 1) then
-    if (isDown(macroHotkey)) then
-      if (caller.sequence ~= '') then
-        suspendInput = true
-        target = caller
-        handle = edit
-        print('entering edit mode')
-      end
+    if (scanCode == macroHotkey) then
+      suspendInput = true
+      handle = edit
+      print('entering edit mode')
     else
+      target = caller
       caller.sequence = caller.sequence .. getKeyName(scanCode)
       print('id ' .. caller.id .. ' recieved \"' .. caller.sequence .. '\"')
 
