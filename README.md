@@ -33,4 +33,4 @@ Default record hotkey is INSERT (key code 45).
 # Known issues
 - Macros no saving. There is just no save function at the time, i'm working on it.
 - By strange reason, recording with non-english keyboard layouts won't work (for me at least).
-- Recording shift+(abc), and sending it results Abc, not ABC. This is LuaMacros bug.
+- Recording shift+(abc), and sending it results Abc, not ABC. This is a LuaMacros bug.
