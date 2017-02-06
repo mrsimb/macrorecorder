@@ -318,9 +318,14 @@ function listen(caller, scanCode, direction)
       caller.sequence = caller.sequence .. getKeyName(scanCode)
       print('id ' .. caller.id .. ' recieved \"' .. caller.sequence .. '\"')
 
-      if (caller.map[caller.sequence] ~= nil) then
-        print('id ' .. caller.id .. ' hotkey \"' .. caller.sequence .. '\" sending \"' .. caller.map[caller.sequence] .. '\"')
-        lmc_send_keys(caller.map[caller.sequence])
+      action = caller.map[caller.sequence]
+
+      if (type(action) == 'string') then
+        print('id ' .. caller.id .. ' hotkey \"' .. caller.sequence .. '\" sending \"' .. action .. '\"')
+        lmc_send_keys(action)
+      elseif (type(action) == 'function') then
+        print('id ' .. caller.id .. ' hotkey \"' .. caller.sequence .. '\" calling embed function')
+        action()
       else
         lmc_send_keys(getModifiers(caller) .. getKeyName(scanCode))
       end
