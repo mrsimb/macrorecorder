@@ -45,5 +45,5 @@ Default record hotkey is INSERT (key code 45).
 4. Example: ['^(c'] = function() print('embed function!') end
 
 ## Known issues
-- By strange reason, recording with non-english keyboard layouts won't work (for me at least).
-- Recording shift+(abc), and sending it results Abc, not ABC. This is a LuaMacros bug.
+- Rocording only works with English layout (due to LuaMacros bug).
+- Recording shift+(abc), and sending it results Abc, not ABC (due to LuaMacros bug).
